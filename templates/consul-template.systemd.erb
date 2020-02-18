@@ -1,0 +1,20 @@
+[Unit]
+Description=Consul-Template Daemon
+Wants=basic.target
+After=basic.target network.target
+
+[Service]
+User=<%= scope.lookupvar('user') %>
+Group=<%= scope.lookupvar('group') %>
+ExecStart=<%= scope.lookupvar('bin_dir') %>/consul-template \
+  -config <%= scope.lookupvar('config_dir') %>/<%= scope.lookupvar('service_name') %>/config <%= scope.lookupvar('extra_options') %>
+SuccessExitStatus=12
+ExecReload=/bin/kill -SIGHUP $MAINPID
+ExecStop=/bin/kill -SIGINT $MAINPID
+KillMode=process
+Restart=always
+RestartSec=42s
+LimitNOFILE=4096
+
+[Install]
+WantedBy=multi-user.target
